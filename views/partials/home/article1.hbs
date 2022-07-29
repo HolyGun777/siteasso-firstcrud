@@ -1,0 +1,158 @@
+<!-- article + photo -->
+
+{{! offcanvas-articles }}
+
+<div class="fixed-top m-5">
+  <button
+    class="btn btn-primary"
+    type="button"
+    data-bs-toggle="offcanvas"
+    data-bs-target="#offcanvasWithBothOptions"
+    aria-controls="offcanvasWithBothOptions"
+  >Articles</button>
+</div>
+
+<div
+  class="offcanvas offcanvas-start"
+  data-bs-scroll="true"
+  tabindex="-1"
+  id="offcanvasWithBothOptions"
+  aria-labelledby="offcanvasWithBothOptionsLabel"
+>
+  <div class="offcanvas-header">
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="offcanvas"
+      aria-label="Close"
+    ></button>
+  </div>
+  <div class="offcanvas-body">
+    <a href="#article1">
+      <h4>Article 1</h4>
+    </a>
+    <a href="#article2">
+      <h4>Article 2</h4>
+    </a>
+    <a href="#article3">
+      <h4>Article 3</h4>
+    </a>
+    <a href="#article4">
+      <h4>Article 4</h4>
+    </a>
+  </div>
+</div>
+
+{{! articles }}
+
+<div class="container">
+  <div class="row">
+
+    {{#each dbArticles }}
+
+    {{ this.titre }}
+
+    <div class="row justify-content-center align-items-center">
+      <h3 class="col-12 col-md-12 text-center" id="article1">Titre1</h3>
+      <div class="col-7 col-md-7 col-sm-12">
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut
+          explicabo expedita ipsam modi maxime, natus consequuntur saepe nihil
+          officia nam non velit, est debitis illum, ex mollitia nostrum
+          similique provident! Lorem, ipsum dolor sit amet consectetur
+          adipisicing elit. Exercitationem consequuntur laudantium, officiis
+          atque quasi pariatur aliquid error optio at, libero quae voluptatibus
+          molestias cumque obcaecati nihil deserunt a esse aliquam!
+        </p>
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut
+          explicabo expedita ipsam modi maxime, natus consequuntur saepe nihil
+          officia nam non velit, est debitis illum, ex mollitia nostrum
+          similique provident! Lorem, ipsum dolor sit amet consectetur
+          adipisicing elit. Exercitationem consequuntur laudantium, officiis
+          atque quasi pariatur aliquid error optio at, libero quae voluptatibus
+          molestias cumque obcaecati nihil deserunt a esse aliquam!
+        </p>
+      </div>
+      <div class="col-5 col-md-5 col-sm-12">
+        <img src="/assets/pics/img1.jpg" class="d-block w-100" alt="" />
+      </div>
+    </div>
+
+    {{/each }}
+{{!--     
+
+    <div class="row justify-content-center align-items-center">
+      <h3 class="col-12 col-md-12 text-center" id="article2">Titre2</h3>
+      <div class="col-5 col-md-5 col-sm-12">
+        <img src="/assets/pics/img2.jpg" class="d-block w-100" alt="" />
+      </div>
+      <div class="col-7 col-md-7 col-sm-12">
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut
+          explicabo expedita ipsam modi maxime, natus consequuntur saepe nihil
+          officia nam non velit, est debitis illum, ex mollitia nostrum
+          similique provident! Lorem, ipsum dolor sit amet consectetur
+          adipisicing elit. Exercitationem consequuntur laudantium, officiis
+          atque quasi pariatur aliquid error optio at, libero quae voluptatibus
+          molestias cumque obcaecati nihil deserunt a esse aliquam!
+        </p>
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut
+          explicabo expedita ipsam modi maxime, natus consequuntur saepe nihil
+          officia nam non velit, est debitis illum, ex mollitia nostrum
+          similique provident! Lorem, ipsum dolor sit amet consectetur
+          adipisicing elit. Exercitationem consequuntur laudantium, officiis
+          atque quasi pariatur aliquid error optio at, libero quae voluptatibus
+          molestias cumque obcaecati nihil deserunt a esse aliquam!
+        </p>
+      </div>
+    </div>
+
+    <div class="row justify-content-center align-items-center">
+      <h3 class="col-12 col-md-12 text-center" id="article3">Titre3</h3>
+      <div class="col-7 col-md-7 col-sm-12">
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut
+          explicabo expedita ipsam modi maxime, natus consequuntur saepe nihil
+          officia nam non velit, est debitis illum, ex mollitia nostrum
+          similique provident! Lorem, ipsum dolor sit amet consectetur
+          adipisicing elit. Exercitationem consequuntur laudantium, officiis
+          atque quasi pariatur aliquid error optio at, libero quae voluptatibus
+          molestias cumque obcaecati nihil deserunt a esse aliquam!
+        </p>
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut
+          explicabo expedita ipsam modi maxime, natus consequuntur saepe nihil
+          officia nam non velit, est debitis illum, ex mollitia nostrum
+          similique provident! Lorem, ipsum dolor sit amet consectetur
+          adipisicing elit. Exercitationem consequuntur laudantium, officiis
+          atque quasi pariatur aliquid error optio at, libero quae voluptatibus
+          molestias cumque obcaecati nihil deserunt a esse aliquam!
+        </p>
+      </div>
+      <div class="col-5 col-md-5 col-sm-12">
+        <img src="/assets/pics/img3.jpg" class="d-block w-100" alt="" />
+      </div>
+    </div>
+    <div class="row justify-content-center align-items-center">
+      <h3 class="col-12 col-md-12 text-center" id="article4">Titre4</h3>
+      <div class="col-5 col-md-5 col-sm-12">
+        <img src="/assets/pics/img.jpg" class="d-block w-100" alt="" />
+      </div>
+      <div class="col-7 col-md-7 col-sm-12">
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut
+          explicabo expedita ipsam modi maxime, natus consequuntur saepe nihil
+          officia nam non velit, est debitis illum, ex mollitia nostrum
+          similique provident! Lorem, ipsum dolor sit amet consectetur
+          adipisicing elit. Exercitationem consequuntur laudantium, officiis
+          atque quasi pariatur aliquid error optio at, libero quae voluptatibus
+          molestias cumque obcaecati nihil deserunt a esse aliquam!
+        </p>
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut
+          explicabo expedita ipsam modi maxime, natus consequuntur saepe nihil
+          officia nam non velit, est debitis illum, ex mollitia nostrum
+          similique provident! Lorem, ipsum dolor sit amet consectetur
+          adipisicing elit. Exercitationem consequuntur laudantium, officiis
+          atque quasi pariatur aliquid error optio at, libero quae voluptatibus
+          molestias cumque obcaecati nihil deserunt a esse aliquam!
+        </p>
+      </div>
+    </div> --}}
+
+  </div>
+</div>

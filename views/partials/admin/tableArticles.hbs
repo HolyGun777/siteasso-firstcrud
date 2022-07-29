@@ -1,0 +1,106 @@
+<div class="container">
+  <div class="row">
+    <h3>Gestion Articles</h3>
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCreateArticles">
+      Create Article
+    </button>
+
+    <!-- Modal Create Article -->
+    <div class="modal fade" id="modalCreateArticles" tabindex="-1" aria-labelledby="modalArticlesLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalArticlesLabel">Modal title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form action="/article" method="post">
+              <div>
+                <label for="titre">Titre</label>
+                <input type="text" name="titre" id="titre">
+              </div>
+              <div>
+                <label for="text">text</label>
+                <input type="text" name="text" id="text">
+              </div>
+              <button class="btn btn-success" type="submit">Create</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Titre</th>
+          <th scope="col">Text</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="table-group-divider">
+
+
+        {{#each dbArticles }}
+        <tr>
+          <th scope="row">{{ inc @index }}</th>
+          <td> {{ upper this.titre }} </td>
+          <td> {{ truncStr this.text 35 }} </td>
+          <td>
+
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+              data-bs-target="#modalEditArticles-{{this.idarticle}}">
+              Open {{ this.idarticle }}
+            </button>
+
+          </td>
+        </tr>
+
+        <!-- Modal Preview or edit -->
+        <div class="modal fade" id="modalEditArticles-{{this.idarticle}}" tabindex="-1"
+          aria-labelledby="modalArticlesLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalArticlesLabel">Modal title: {{ this.titre }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form action="/article/{{ this.idarticle }}?_method=PUT" method="post">
+                  <div>
+                    <label for="titre">Titre</label>
+                    <input type="text" name="titre" id="titre" value="{{ this.titre }}">
+                  </div>
+                  <div>
+                    <label for="text">text</label>
+                    <input type="text" name="text" id="text" value="{{ this.text }}">
+                  </div>
+                  <button class="btn btn-success" type="submit">Edit</button>
+                </form>
+                <form action="/article/{{ this.idarticle }}?_method=DELETE" method="post">
+                  <button class="btn btn-danger" type="submit">Supprimer</button>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {{/each }}
+
+      </tbody>
+    </table>
+  </div>
+</div>
