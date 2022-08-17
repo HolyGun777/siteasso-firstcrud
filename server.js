@@ -4,8 +4,8 @@ const { engine } = require('express-handlebars');
 const app = express();
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
-
-const { limitArray, stripTags, inc, ifCond, formatDate, upper, truncStr } = require('./helpers')
+const session = require('express-session');
+const { limitArray, stripTags, inc, ifCond, formatDate, upper, truncStr } = require('./helpers');
 
 // Config Handlebars
 app.engine('.hbs', engine({
@@ -18,7 +18,6 @@ app.engine('.hbs', engine({
 }));
 app.set('view engine', '.hbs');
 app.set('views', './views');
-
 
 app.use(methodOverride('_method'));
 
@@ -41,3 +40,19 @@ const port = process.env.PORT || 3000;
 app.listen(port, function () {
     console.log(`Ecoute le port ${port}, lancé le : ${new Date().toLocaleString()}`);
 });
+
+const bcrypt = require('bcrypt')
+
+const str = "1234695"
+
+bcrypt.hash(str, 10, (err, hash) => {
+
+    console.log('hash', hash)
+
+    bcrypt.compare('133658', hash, (err, result) => {
+
+        console.log('result', result)
+
+    })
+})
+

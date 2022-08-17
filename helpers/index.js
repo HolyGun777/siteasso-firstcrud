@@ -36,6 +36,7 @@ exports.ifCond = (v1, v2, options) => {
   }
   return options.inverse(this);
 }
+
 // Dates
 exports.formatDate = (date, format) => {
   return moment(date).utc().format(format)
