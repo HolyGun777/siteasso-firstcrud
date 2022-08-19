@@ -16,9 +16,7 @@
     <ul>
         {{#if user}}
        
-        <li><a href="/admin">Admin</a></li>
         <li>
-            <li>Bienvenue {{user.pseudo}} vous étes connecté</li>
             <form action="/logout" method="post">
                 <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Déconnexion</button>
             </form>
@@ -28,8 +26,8 @@
             connexion/inscription
         </button></li>
         {{/if}}
+        <li><a href="/admin">Admin</a></li>
     </ul>
-
 
     {{!-- offcanva --}}
 
@@ -46,7 +44,7 @@
                     <a href="/article" class="btn btn-primary">Article</a>
                     <a href="/biographie" class="btn btn-primary">Biographie</a>
                     <a href="/formulaire" class="btn btn-primary">Formulaire</a>
-                    <a href="/sitepartenaire" class="btn btn-primary">Site partenaire</a>
+                    <a href="/profile" class="btn btn-primary">Profile</a>
                 </div>
             </div>
         </div>

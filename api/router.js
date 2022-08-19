@@ -112,8 +112,8 @@ router.get('/admin2', function (req, res) {
     res.render('admin2')
 })
 
-router.get('/sitepartenaire', function (req, res) {
-    res.render('sitepartenaire')
+router.get('/profile', function (req, res) {
+    res.render('profile')
 })
 
 router.get('/pageerreur', function (req, res) {
@@ -175,9 +175,9 @@ router
 
             bcrypt.compare(password, data[0].motdepasse, function (err, result) {
                 if (result === true) {
-            
+
                     let user = data[0];
-                    
+
                     // Assignation des data user dans la session
                     req.session.user = {
                         id: user.id,
@@ -192,7 +192,7 @@ router
             });
         })
     })
-    
+
 //variable global des donner utilisateur pour leur utiliser avec HBS par la suite
 router.use('*', (req, res, next) => {
     res.locals.user = req.session.user;
@@ -201,13 +201,13 @@ router.use('*', (req, res, next) => {
 
 // Partie deconnection
 
-router.post('/logout', (req, res)=>{
+router.post('/logout', (req, res) => {
     req.session.destroy(() => {
-      res.clearCookie('poti-gato');
-      console.log("Clear Cookie session :", req.sessionID);
-      res.redirect('/');
+        res.clearCookie('poti-gato');
+        console.log("Clear Cookie session :", req.sessionID);
+        res.redirect('/');
     })
-  })
+})
 
 
 module.exports = router
