@@ -1,10 +1,13 @@
 // Import Module global
+require('dotenv').config()
 const express = require('express');
 const { engine } = require('express-handlebars');
 const app = express();
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
-const session = require('express-session');
+const expressSession = require("express-session");
+const MySQLStore = require("express-mysql-session")(expressSession);
+
 const { limitArray, stripTags, inc, ifCond, formatDate, upper, truncStr } = require('./helpers');
 
 // Config Handlebars
@@ -29,7 +32,31 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
+const configDB = {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+};
 
+// Configuration Express-Session
+var sessionStore = new MySQLStore(configDB);
+app.use(
+  expressSession({
+    secret: "securite",
+    name: "poti-gato",
+    saveUninitialized: true,
+    resave: false,
+    store: sessionStore
+  })
+  );
+// Session Connexion for HBS
+app.use('*', (req, res, next) => {
+    res.locals.user = req.session.user;
+    next();
+  })
+  
 // Router
 const ROUTER =  require("./api/router")
 app.use(ROUTER)
@@ -41,18 +68,22 @@ app.listen(port, function () {
     console.log(`Ecoute le port ${port}, lancé le : ${new Date().toLocaleString()}`);
 });
 
-const bcrypt = require('bcrypt')
 
-const str = "1234695"
 
-bcrypt.hash(str, 10, (err, hash) => {
 
-    console.log('hash', hash)
+//hashage du mot de passe
+// const bcrypt = require('bcrypt')
 
-    bcrypt.compare('133658', hash, (err, result) => {
+// const str = "1234567"
 
-        console.log('result', result)
+// bcrypt.hash(str, 10, (err, hash) => {
 
-    })
-})
+//     console.log('hash', hash)
+
+//     bcrypt.compare('1234567', hash, (err, result) => {
+
+//         console.log('result', result)
+        
+//     })
+// })
 

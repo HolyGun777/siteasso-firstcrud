@@ -1,7 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const bcrypt = require("bcrypt")
 const db = require('./config/db')
+const bcrypt = require('bcrypt')
+
 
 // db.query('select * from article', (err, data) => {
 //     console.log('pdrfisgjrqes', data)
@@ -78,7 +79,6 @@ router
         res.render('inscription')
     })
     .post('/inscription', async (req, res) => {
-        console.log('inscription', req.body)
         const {
             nom,
             prenom,
@@ -87,6 +87,7 @@ router
             pseudo,
             motdepasse
         } = req.body;
+        console.log('inscription', req.body)
 
         db.query(`INSERT INTO user (nom,prenom,mail,numero,pseudo,motdepasse) VALUES 
     ("${ nom }","${ prenom }","${ mail }","${ numero }","${ pseudo }","${ await bcrypt.hash(motdepasse, 10) }")`)
@@ -130,9 +131,7 @@ router
             id
         } = req.params
         const user = await db.query(`SELECT * FROM user WHERE id = ${ id }`)
-
         if (user.length <= 0) res.redirect('/')
-
         else res.render('/', {
             user: user[0]
         })
@@ -150,53 +149,65 @@ router
             pseudo,
             motdepasse
         } = req.body;
-
         if (nom) await db.query(`UPDATE user SET nom = "${ nom }" WHERE id = ${ id }`)
         if (prenom) await db.query(`UPDATE user SET prenom = "${ prenom }" WHERE id = ${ id }`)
         if (mail) await db.query(`UPDATE user SET mail = "${ mail }" WHERE id = ${ id }`)
         if (numero) await db.query(`UPDATE user SET numero = "${ numero }" WHERE id = ${ id }`)
         if (pseudo) await db.query(`UPDATE user SET nom = "${ pseudo }" WHERE id = ${ id }`)
         if (motdepasse) await db.query(`UPDATE user SET nom = "${ motdepasse }" WHERE id = ${ id }`)
-
         res.redirect('/')
     })
 
-
 //Connection
-
 router
     .post('/login', (req, res) => {
         const {
-            email,
+            mail,
             password
         } = req.body
 
         console.log("login", req.body)
 
-        db.query(`SELECT motdepasse FROM user WHERE mail ="${email}"`, function (err, data) {
+        db.query(`SELECT * FROM user WHERE mail ="${mail}"`, function (err, data) {
             if (err) throw err;
-
+            console.log(data);
             if (!data[0]) return res.redirect('/')
 
-            bcrypt.compare(password, data[0].password, function (err, result) {
+            bcrypt.compare(password, data[0].motdepasse, function (err, result) {
                 if (result === true) {
-                    setSession(req, res, email)
-                } else return res.render('connexion', {
+            
+                    let user = data[0];
+                    
+                    // Assignation des data user dans la session
+                    req.session.user = {
+                        id: user.id,
+                        email: user.mail,
+                        pseudo: user.pseudo
+                    };
+                    console.log('ok login');
+                    res.redirect('/')
+                } else return res.render('home', {
                     flash: "L\'email ou le mot de passe n\'est pas correct !"
                 })
             });
         })
-
     })
+    
+//variable global des donner utilisateur pour leur utiliser avec HBS par la suite
+router.use('*', (req, res, next) => {
+    res.locals.user = req.session.user;
+    next();
+})
 
-//Deconnection
+// Partie deconnection
 
-//  app.post('/logout', (req, res)=>{
-//     req.session.destroy(() => {
-//       res.clearCookie('poti-gato');
-//       console.log("Clear Cookie session :", req.sessionID);
-//       res.redirect('/');
-//     })
-//   })
+router.post('/logout', (req, res)=>{
+    req.session.destroy(() => {
+      res.clearCookie('poti-gato');
+      console.log("Clear Cookie session :", req.sessionID);
+      res.redirect('/');
+    })
+  })
+
 
 module.exports = router
