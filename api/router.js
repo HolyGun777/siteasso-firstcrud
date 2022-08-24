@@ -22,10 +22,11 @@ router
 
         if (article.length <= 0) res.redirect('/')
 
-        else res.render('article', {
+        else res.render('articleID', {
             article: article[0]
         })
     })
+    
     .put('/article/:id', async (req, res) => {
         console.log('edit::article', req.params, req.body)
         const {
@@ -94,11 +95,11 @@ router
         res.redirect('/')
     })
 
-router.get('/admin1', function (req, res) {
-    res.render('admin1', {
-        layout: 'adminLayout'
-    })
-})
+// router.get('/admin1', function (req, res) {
+//     res.render('admin1', {
+//         layout: 'adminLayout'
+//     })
+// })
 
 router.get('/admin', function (req, res) {
     db.query('SELECT * FROM article', (err, data) => {
@@ -158,7 +159,7 @@ router
         res.redirect('/')
     })
 
-//Connection
+//Connection de l utilisateur
 router
     .post('/login', (req, res) => {
         const {

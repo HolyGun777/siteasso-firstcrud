@@ -4,7 +4,7 @@
 
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCreateArticles">
-      Create Article
+      Création d'articles.
     </button>
 
     <!-- Modal Create Article -->
@@ -23,15 +23,16 @@
                 <input type="text" name="titre" id="titre">
               </div>
               <div>
-                <label for="text">text</label>
-                <input type="text" name="text">
+
+                {{!-- <input type="text" name="text"> --}}
+                <div class="form-floating">
+                  <textarea name="text" class="form-control" placeholder="Leave a comment here"
+                    id="floatingTextarea"></textarea>
+                  <label for="floatingTextarea">text</label>
+                </div>
               </div>
               <button class="btn btn-success" type="submit">Create</button>
             </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
           </div>
         </div>
       </div>
@@ -48,12 +49,20 @@
       </thead>
       <tbody class="table-group-divider">
 
+        {{!-- <div class="form-floating">
+          <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea"></textarea>
+          <label for="floatingTextarea">{{ upper this.titre }} </label>
+        </div>
+        <div class="form-floating">
+          <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea"></textarea>
+          <label for="floatingTextarea">{{this.text}}</label>
+        </div> --}}
 
         {{#each dbArticles }}
         <tr>
           <th scope="row">{{ inc @index }}</th>
           <td> {{ upper this.titre }} </td>
-          <td> {{ truncStr this.text 35 }} </td>
+          <td> {{ truncStr this.text 50 }} </td>
           <td>
 
             <!-- Button trigger modal -->
@@ -61,7 +70,6 @@
               data-bs-target="#modalEditArticles-{{this.idarticle}}">
               Open {{ this.idarticle }}
             </button>
-
           </td>
         </tr>
 
@@ -71,7 +79,7 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="modalArticlesLabel">Modal title: {{ this.titre }}</h5>
+                <h5 class="modal-title" id="modalArticlesLabel">{{ this.titre }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
@@ -83,24 +91,26 @@
                   <div>
                     <label for="text">text</label>
                     <input type="text" name="text" value="{{ this.text }}">
+                    <button class="btn btn-success" type="submit">Editer</button>
                   </div>
-                  <button class="btn btn-success" type="submit">Edit</button>
+                  <div class="form-floating">
+                    <textarea name="text" class="form-control" placeholder="Leave a comment here"
+                      id="floatingTextarea"></textarea>
+                    <label for="floatingTextarea">{{this.text}}</label>
+                  </div>
                 </form>
                 <form action="/article/{{ this.idarticle }}?_method=DELETE" method="post">
                   <button class="btn btn-danger" type="submit">Supprimer</button>
                 </form>
               </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-              </div>
             </div>
           </div>
         </div>
-
         {{/each }}
-
       </tbody>
     </table>
   </div>
 </div>
+
+
+<span></span>

@@ -69,13 +69,10 @@ app.listen(port, function () {
 });
 
 
-
-
-//hashage du mot de passe
+// hashage du mot de passe
 // const bcrypt = require('bcrypt')
 
 // const str = "1234567"
-
 // bcrypt.hash(str, 10, (err, hash) => {
 
 //     console.log('hash', hash)
@@ -86,4 +83,5 @@ app.listen(port, function () {
         
 //     })
 // })
+
 

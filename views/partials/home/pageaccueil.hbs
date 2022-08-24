@@ -1,8 +1,18 @@
 <div class="container">
+    <div class="d-flex justify-content-center">
+        {{!-- message de refus d'authentification --}}
+        {{#if flash}}
+        <h1 style="color:red;">{{flash}}</h1>
+        {{/if}}
+    </div>
+
     <h1 class="d-flex justify-content-center">Ecole VÕ SAO LIM du Mans</h1>
+
+    {{!-- message de bienvenue --}}
     {{#if user}}
     <h3>Bienvenue {{user.pseudo}}</h3>
     {{/if}}
+
     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.
         Distinctio harum aut quidem magnam. Corporis necessitatibus
         eum quos, porro nostrum exercitationem molestias atque
