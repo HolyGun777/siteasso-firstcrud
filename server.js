@@ -8,6 +8,7 @@ const methodOverride = require('method-override');
 const expressSession = require("express-session");
 const MySQLStore = require("express-mysql-session")(expressSession);
 
+
 const { limitArray, stripTags, inc, ifCond, formatDate, upper, truncStr } = require('./helpers');
 
 // Config Handlebars

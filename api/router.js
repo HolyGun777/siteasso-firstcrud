@@ -2,6 +2,19 @@ const express = require('express')
 const router = express.Router()
 const db = require('./config/db')
 const bcrypt = require('bcrypt')
+const nodemailer = require('nodemailer')
+
+
+transporter = nodemailer.createTransport({
+    host: "pop-mail.outlook.com",
+    service: 'outlook',
+    port: '995',
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD
+    }
+})
+
 
 
 // db.query('select * from article', (err, data) => {
@@ -26,7 +39,7 @@ router
             article: article[0]
         })
     })
-    
+
     .put('/article/:id', async (req, res) => {
         console.log('edit::article', req.params, req.body)
         const {
@@ -98,6 +111,14 @@ router
 // router.get('/admin1', function (req, res) {
 //     res.render('admin1', {
 //         layout: 'adminLayout'
+//     })
+// })
+
+// router.get('/admin', function (req, res) {
+//     db.query('SELECT * FROM article', (err, data) => {
+//         res.render('admin', {
+//             layout: 'adminLayout'
+//         })
 //     })
 // })
 
@@ -194,14 +215,44 @@ router
         })
     })
 
-//variable global des donner utilisateur pour leur utiliser avec HBS par la suite
-router.use('*', (req, res, next) => {
-    res.locals.user = req.session.user;
-    next();
+
+// Nodemailer route
+router.post('/contact', (req, res) => {
+    console.log('form contact', req.body)
+    const {
+        email,
+        message
+    } = req.body
+
+    let mailOptions = {
+        from: 'eddyleguen2@outlook.fr',
+        to: 'eddyleguen2@outlook.fr',
+        subject:'Sujet',
+        html: `
+                  <h2>Mail:</h2>
+                  ${email}
+                  <h2>Sujet:</h2>
+                  ${message}
+                `
+    }
+    // On demande à notre transporter d'envoyer notre mail
+    transporter.sendMail(mailOptions, (err, info) => {
+        if (err) console.log(err)
+        else {
+            console.log(info)
+            res.render('home', {
+                success: "Un email à bien été envoyer à ",
+                flash: ('Votre message a été envoyé !!!')
+            })
+        }
+    })
 })
 
-// Partie deconnection
 
+
+
+
+// Partie deconnection
 router.post('/logout', (req, res) => {
     req.session.destroy(() => {
         res.clearCookie('poti-gato');
