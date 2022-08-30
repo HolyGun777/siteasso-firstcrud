@@ -11,48 +11,89 @@
         </tr>
       </thead>
       <tbody class="table-group-divider">
+ <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCreateStages">
+      Création de stage.
+    </button>
 
-        {{!-- {{#each dbArticles }} --}}
-        <tr>
-          <th scope="row">{{ @index }}</th>
-          <td> {{ this.titre }} </td>
-          <td> {{ this.text }} </td>
+
+    <div class="modal fade" id="modalCreateStages" tabindex="-1" aria-labelledby="modalArticlesLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalArticlesLabel">Modal title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form action="/stage/" method="post">
+              <div>
+                <label for="titre">Titre</label>
+                <input type="text" name="titre" id="titre">
+              </div>
+              <div>
+                <div class="form-floating">
+                  <textarea name="text" class="form-control" placeholder="Leave a comment here"
+                    id="floatingTextarea"></textarea>
+                  <label for="floatingTextarea">text</label>
+                </div>
+              </div>
+              <button class="btn btn-success" type="submit">Create</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+        {{#each dbstage}}
+             <tr>
+          <th scope="row">{{ inc @index }}</th>
+          <td> {{ upper this.titre }} </td>
+          <td> {{ truncStr this.text 50 }} </td>
           <td>
 
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-              data-bs-target="#modalArticles-{{this.id}}">
-              Open
+              data-bs-target="#modalArticles-{{this.idstage}}">
+              Open {{ this.idstage }}
             </button>
-
           </td>
         </tr>
 
-        <!-- Modal -->
-        <div class="modal fade" id="modalArticles-{{this.id}}" tabindex="-1" aria-labelledby="modalArticlesLabel"
-          aria-hidden="true">
+        <!-- Modal Preview or edit -->
+        <div class="modal fade" id="modalArticles-{{this.idstage}}" tabindex="-1"
+          aria-labelledby="modalArticlesLabel" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="modalArticlesLabel">Modal title</h5>
+                <h5 class="modal-title" id="modalArticlesLabel">{{ this.titre }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                <h4> {{ this.titre }}</h4>
-                <p> {{ this.text }} </p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <form action="/stage/{{ this.idstage }}?_method=PUT" method="post">
+                  <div>
+                    <label for="titre">Titre</label>
+                    <input type="text" name="titre" id="titre" value="{{ this.titre }}">
+                  </div>
+                  <div>
+                    <label for="text">text</label>
+                    <input type="text" name="text" value="{{ this.text }}">
+                    <button class="btn btn-success" type="submit">Editer</button>
+                  </div>
+                  <div class="form-floating">
+                    <textarea name="text" class="form-control" placeholder="Leave a comment here"
+                      id="floatingTextarea"></textarea>
+                    <label for="floatingTextarea">{{this.text}}</label>
+                  </div>
+                </form>
+                <form action="/stage/{{ this.idstage }}?_method=DELETE" method="post">
+                  <button class="btn btn-danger" type="submit">Supprimer</button>
+                </form>
               </div>
             </div>
           </div>
         </div>
-
-        {{!-- {{/each }} --}}
-
-
-
+        {{/each}}
       </tbody>
     </table>
   </div>

@@ -4,7 +4,6 @@ const db = require('./config/db')
 const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 
-
 transporter = nodemailer.createTransport({
     host: "pop-mail.outlook.com",
     service: 'outlook',
@@ -15,8 +14,6 @@ transporter = nodemailer.createTransport({
     }
 })
 
-
-
 // db.query('select * from article', (err, data) => {
 //     console.log('pdrfisgjrqes', data)
 // })
@@ -25,6 +22,10 @@ transporter = nodemailer.createTransport({
 router.get('/', function (req, res) {
     res.render('home')
 })
+
+/*
+ * Router article
+ * ************** */
 
 router
     .get('/article/:id', async (req, res) => {
@@ -79,6 +80,77 @@ router
         db.query(`INSERT INTO article (titre, text) VALUES ("${ titre }", "${ text }")`)
         res.redirect('/admin')
     })
+////////////////////////////////////////////////////////////////////////////////////////
+
+/*
+ * Router stage
+ * ************** */
+router
+    .get('/stage/:id', async (req, res) => {
+        const {
+            id
+        } = req.params
+        const stage = await db.query(`SELECT * FROM stage WHERE idstage = ${ id }`)
+
+        if (stage.length <= 0) res.redirect('/')
+
+        else res.render('stageID', {
+            stage: stage[0]
+        })
+    })
+
+    .put('/stage/:id', async (req, res) => {
+        console.log('edit::stage', req.params, req.body)
+        const {
+            id
+        } = req.params;
+        const {
+            titre,
+            text
+        } = req.body;
+
+        if (titre) await db.query(`UPDATE stage SET titre = "${ titre }" WHERE idstage = ${ id }`)
+        if (text) await db.query(`UPDATE stage SET text = "${ text }" WHERE idstage = ${ id }`)
+
+        res.redirect('/admin')
+    })
+    .delete('/stage/:id', async (req, res) => {
+        console.log('delete::stage', req.params, req.body)
+        const {
+            id
+        } = req.params
+        if (id) await db.query(`DELETE FROM stage WHERE idstage = ${id}`)
+        res.redirect('/admin')
+    })
+
+router
+    .get('/stage', async (req, res) => {
+        const data = await db.query('SELECT * FROM stage')
+        res.render('stage', {
+            dbstage: data
+        })
+    })
+    .post('/stage', (req, res) => {
+        console.log('create::stage', req.body)
+        const {
+            titre,
+            text
+        } = req.body
+        db.query(`INSERT INTO stage (titre, text) VALUES ("${ titre }", "${ text }")`)
+        res.redirect('/admin')
+    })
+
+
+router.get('/admin', async (req, res) => {
+    res.render('admin', {
+        layout: 'adminLayout',
+        dbstage: await db.query('SELECT * FROM stage'),
+        dbArticles: await db.query('SELECT * FROM article')
+
+    })
+})
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 router.get('/biographie', function (req, res) {
     res.render('biographie')
@@ -122,13 +194,13 @@ router
 //     })
 // })
 
-router.get('/admin', function (req, res) {
-    db.query('SELECT * FROM article', (err, data) => {
-        res.render('admin', {
-            dbArticles: data
-        })
-    })
-})
+// router.get('/admin', function (req, res) {
+//     db.query('SELECT * FROM article', (err, data) => {
+//         res.render('admin', {
+//             dbArticles: data
+//         })
+//     })
+// })
 
 router.get('/admin2', function (req, res) {
     res.render('admin2')
@@ -227,7 +299,7 @@ router.post('/contact', (req, res) => {
     let mailOptions = {
         from: 'eddyleguen2@outlook.fr',
         to: 'eddyleguen2@outlook.fr',
-        subject:'Sujet',
+        subject: 'Sujet',
         html: `
                   <h2>Mail:</h2>
                   ${email}
@@ -247,9 +319,6 @@ router.post('/contact', (req, res) => {
         }
     })
 })
-
-
-
 
 
 // Partie deconnection
