@@ -85,6 +85,8 @@ router
 /*
  * Router stage
  * ************** */
+
+
 router
     .get('/stage/:id', async (req, res) => {
         const {
@@ -98,7 +100,7 @@ router
             stage: stage[0]
         })
     })
-
+   
     .put('/stage/:id', async (req, res) => {
         console.log('edit::stage', req.params, req.body)
         const {
@@ -151,13 +153,18 @@ router.get('/admin', async (req, res) => {
 })
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+router.get('/stage/:id', function (req, res) {
+    res.render('stage')
+})
 
 router.get('/biographie', function (req, res) {
     res.render('biographie')
 })
 
-router.get('/formulaire', function (req, res) {
-    res.render('formulaire')
+router.get('/formulaire', async function (req, res) {
+    res.render('formulaire',{
+       dbstage : await db.query('SELECT * FROM stage')
+    })
 })
 
 router
@@ -204,10 +211,6 @@ router
 
 router.get('/admin2', function (req, res) {
     res.render('admin2')
-})
-
-router.get('/profile', function (req, res) {
-    res.render('profile')
 })
 
 router.get('/pageerreur', function (req, res) {
