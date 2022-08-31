@@ -1,29 +1,17 @@
-{{!-- <div>
-  <h1> {{ article.titre }} </h1>
-  <h1> {{ article.text }} </h1>
-</div> --}}
-{{!-- <td> {{ truncStr this.text 50 }} </td> --}}
 
-<div class="container">
-  <div class="d-flex justify-content-between m-2">
-
-    {{#each dbArticles }}
-    <div class="card" style="width: 18rem;">
-      <img src="..." class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">{{ inc @index }} {{ upper this.titre }}</h5>
-        <p class="card-text"> {{ truncStr this.text 20}}</p>
-        <a href="/article/{{ this.idarticle }}" class="btn btn-primary">FullArticle</a>
+{{!-- boucle permettant d afficher des article de la db dans une page --}}
+  <div class="container">
+    <div class="d-flex justify-content-between m-2">
+      {{#each dbArticles }}
+      <div class="card" style="width: 18rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">{{ inc @index }} {{ upper this.titre }}</h5>
+          <p class="card-text"> {{ truncStr this.text 20}}</p>
+          <a href="/article/{{ this.idarticle }}" class="btn btn-primary">Voir +</a>
+        </div>
       </div>
+      {{/each }}
     </div>
-    {{/each }}
   </div>
-</div>
-
-{{!-- {{#each dbArticles }}
-<div class="container">
-  <div class="d-flex justify-content-center mt-2">{{ inc @index }} {{ upper this.titre }}</div>
-  <a href="/article/{{ this.idarticle }}"> Voir + </a>
-  <div class="d-flex justify-content-center mt-2">{{ this.text }}</div>
-</div>
-{{/each }} --}}
+  <img src="/assets/pics/img.jpg" class="d-block w-100" alt="">

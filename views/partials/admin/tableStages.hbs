@@ -11,12 +11,12 @@
         </tr>
       </thead>
       <tbody class="table-group-divider">
- <!-- Button trigger modal -->
+ <!-- Button modal creation de stage-->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCreateStages">
       Création de stage.
     </button>
 
-
+{{!-- modale creation de stage --}}
     <div class="modal fade" id="modalCreateStages" tabindex="-1" aria-labelledby="modalArticlesLabel"
       aria-hidden="true">
       <div class="modal-dialog">
@@ -28,23 +28,23 @@
           <div class="modal-body">
             <form action="/stage/" method="post">
               <div>
-                <label for="titre">Titre</label>
+                <label for="titre">Date</label>
                 <input type="text" name="titre" id="titre">
               </div>
               <div>
                 <div class="form-floating">
                   <textarea name="text" class="form-control" placeholder="Leave a comment here"
                     id="floatingTextarea"></textarea>
-                  <label for="floatingTextarea">text</label>
+                  <label for="floatingTextarea">Description</label>
                 </div>
               </div>
-              <button class="btn btn-success" type="submit">Create</button>
+              <button class="btn btn-success" type="submit">Editer</button>
             </form>
           </div>
         </div>
       </div>
     </div>
-     
+     {{!-- Boucle pour chaque stage dans la db un modal d edition est créer --}}
         {{#each dbstage}}
              <tr>
           <th scope="row">{{ inc @index }}</th>
@@ -52,7 +52,7 @@
           <td> {{ truncStr this.text 50 }} </td>
           <td>
 
-            <!-- Button trigger modal -->
+            <!-- Button modal edition de stage -->
             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
               data-bs-target="#modalArticles-{{this.idstage}}">
               Open {{ this.idstage }}
@@ -60,7 +60,7 @@
           </td>
         </tr>
 
-        <!-- Modal Preview or edit -->
+        <!-- Modal edition de stage -->
         <div class="modal fade" id="modalArticles-{{this.idstage}}" tabindex="-1"
           aria-labelledby="modalArticlesLabel" aria-hidden="true">
           <div class="modal-dialog">
@@ -72,11 +72,11 @@
               <div class="modal-body">
                 <form action="/stage/{{ this.idstage }}?_method=PUT" method="post">
                   <div>
-                    <label for="titre">Titre</label>
+                    <label for="titre">Date</label>
                     <input type="text" name="titre" id="titre" value="{{ this.titre }}">
                   </div>
                   <div>
-                    <label for="text">text</label>
+                    <label for="text">Description</label>
                     <input type="text" name="text" value="{{ this.text }}">
                     <button class="btn btn-success" type="submit">Editer</button>
                   </div>

@@ -38,7 +38,6 @@
         <div class="offcanvas-body">
             <div class="container">
                 <div class="d-grid gap-3">
-                    <a href="/" class="btn btn-primary">Accueil</a>
                     <a href="/article" class="btn btn-primary">Article</a>
                     <a href="/biographie" class="btn btn-primary">Biographie</a>
                     <a href="/formulaire" class="btn btn-primary">Information stage</a>
@@ -76,7 +75,7 @@
                     </div>
                     <div>
                         {{!-- Inscription --}}
-                        <form action="/inscription" method="post" class="row g-3" enctype="multipart/form-data">
+                        <form action="/inscription" method="post" class="row g-3">
                             <h1 class="d-flex justify-content-center">Inscription</h1>
                             <div class="col-md-6">
                                 <label for="inputEmail4" class="form-label">Nom</label>
@@ -102,10 +101,12 @@
                                 <label for="inputZip" class="form-label">Mot de passe</label>
                                 <input type="password" class="form-control" name="motdepasse">
                             </div>
-                            <div class="col-md-6">
+
+
+                            {{!-- <div class="col-md-6">
                                 <label for="inputZip" class="form-label">Photo</label>
                                <input type="file" class="form-control-file" name="uploaded_file">
-                            </div>
+                            </div> --}}
 
 
                             <div class="col-12 d-flex justify-content-center mb-2">

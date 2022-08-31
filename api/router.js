@@ -153,8 +153,13 @@ router.get('/admin', async (req, res) => {
 })
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-router.get('/stage/:id', function (req, res) {
-    res.render('stage')
+router.get('/stage/:id', async function (req, res) {
+    const { id } = res.params
+    const stage = await db.query(`SELECT * FROM stage WHERE idstage = ${ id }`)
+
+    res.render('formulaire',{
+        stage : stage[0]
+     })
 })
 
 router.get('/biographie', function (req, res) {
