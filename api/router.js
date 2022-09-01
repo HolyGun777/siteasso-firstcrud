@@ -214,10 +214,6 @@ router
 //     })
 // })
 
-router.get('/admin2', function (req, res) {
-    res.render('admin2')
-})
-
 router.get('/pageerreur', function (req, res) {
     res.render('pageerreur')
 })
