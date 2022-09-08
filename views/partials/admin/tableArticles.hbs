@@ -89,6 +89,12 @@
                   <div>
                     <label for="text">text</label>
                     <input type="text" name="text" value="{{ this.text }}">
+                    {{!-- insertion de fichier --}}
+                    <div class="mb-3">
+                      <label for="formFile" class="form-label">Default file input example</label>
+                      <input class="form-control" type="file" id="formFile">
+                    </div>
+
                     <button class="btn btn-success" type="submit">Editer</button>
                   </div>
                   <div class="form-floating">

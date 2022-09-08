@@ -4,7 +4,10 @@ const db = require('./config/db')
 const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 
-transporter = nodemailer.createTransport({
+const multer = require("multer");
+const { MulterError } = require('multer')
+
+const transporter = nodemailer.createTransport({
     host: "pop-mail.outlook.com",
     service: 'outlook',
     port: '995',
@@ -14,28 +17,93 @@ transporter = nodemailer.createTransport({
     }
 })
 
-// db.query('select * from article', (err, data) => {
-//     console.log('pdrfisgjrqes', data)
-// })
+/*
+ * Config Multer
+ * ************** */
 
-// Router
+// Ici nous définissons la config de stockage de multer
+const storage = multer.diskStorage({
+    // Ici la destination (ou seront stocker nos fichiers par default)
+    destination: (req, file, cb) => {
+        cb(null, './public/upload')
+    },
+    // Ici est définit le format du nom de l'image à stocker
+    filename: (req, file, cb) => {
+        console.log('config multer', file, file.originalname)
+        const ext = file.originalname.slice(-3),
+
+        completed = file.originalname        
+        
+        file.completed = completed
+
+        // name_timestamp.ext
+
+        cb(null, completed)
+    }
+})
+
+// Ici seront initialiser les parametre de la config de multer
+const upload = multer({
+    // Ici nous renseignons le stockage definit au dessus
+    storage: storage,
+    // Ici seront renseigner les limits des fichiers (taile, proportion, ...)
+    limits: {
+        files: 1
+    },
+    // Ici nous avons un filtre qui va nous permetre de configurer les extensions accepter par notre middleware ou autre
+    fileFilter: (req, file, cb) => {
+        if (
+            file.mimetype === "image/png" ||
+            file.mimetype === "image/jpg" ||
+            file.mimetype === "image/jpeg"||
+            file.mimetype === "image/gif"
+        ) {
+            cb(null, true)
+        } else {
+            cb(null, false)
+            cb(new Error('Le fichier doit être au format png, jpg, jpeg ou gif.'))                                             
+        }
+    }
+})
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ * ----ROUTER----
+ * ************** */
+
+router.route('/ping').get((req, res) => res.json({ message: "Pong !" }))
+
 router.get('/', function (req, res) {
     res.render('home')
 })
 
 /*
+ * Router Multer
+ * ************* */
+router.route("/article")
+    .post(upload.single('image'))
+
+router.post("/admin/:id", upload.single('image'), async (req, res) => {
+    const { image } = req.body;
+    const imageID = req.file ? req.file.filename : false;
+
+    if (image) await db.query(`INSERT INTO article SET image="${image}", id="${imageID}" , image="${image}"`),
+      console.log("image OK");
+    else await db.query(`INSERT INTO article SET image="${image}", id="${imageID}" , image=''`);
+
+    res.redirect("/");
+  })
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
  * Router article
  * ************** */
-
 router
     .get('/article/:id', async (req, res) => {
         const {
             id
         } = req.params
         const article = await db.query(`SELECT * FROM article WHERE idarticle = ${ id }`)
-
         if (article.length <= 0) res.redirect('/')
-
         else res.render('articleID', {
             article: article[0]
         })
@@ -80,12 +148,11 @@ router
         db.query(`INSERT INTO article (titre, text) VALUES ("${ titre }", "${ text }")`)
         res.redirect('/admin')
     })
-////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*
  * Router stage
- * ************** */
-
+ * ************ */
 
 router
     .get('/stage/:id', async (req, res) => {
@@ -142,7 +209,6 @@ router
         res.redirect('/admin')
     })
 
-
 router.get('/admin', async (req, res) => {
     res.render('admin', {
         layout: 'adminLayout',
@@ -151,8 +217,8 @@ router.get('/admin', async (req, res) => {
 
     })
 })
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
 router.get('/stage/:id', async function (req, res) {
     const { id } = res.params
     const stage = await db.query(`SELECT * FROM stage WHERE idstage = ${ id }`)
@@ -191,7 +257,7 @@ router
     ("${ nom }","${ prenom }","${ mail }","${ numero }","${ pseudo }","${ await bcrypt.hash(motdepasse, 10) }")`)
         res.redirect('/')
     })
-
+    
 // router.get('/admin1', function (req, res) {
 //     res.render('admin1', {
 //         layout: 'adminLayout'
@@ -218,11 +284,10 @@ router.get('/pageerreur', function (req, res) {
     res.render('pageerreur')
 })
 
-router.get('/*', function (req, res) {
-    res.render('pageerreur')
-})
 
-//Inscription
+/*
+ * Router inscription
+ * ****************** */
 router
     .get('/:id', async (req, res) => {
         const {
@@ -256,7 +321,9 @@ router
         res.redirect('/')
     })
 
-//Connection de l utilisateur
+/*
+ * Connection utilisateur
+ * ****************** */
 router
     .post('/login', (req, res) => {
         const {
@@ -273,9 +340,7 @@ router
 
             bcrypt.compare(password, data[0].motdepasse, function (err, result) {
                 if (result === true) {
-
                     let user = data[0];
-
                     // Assignation des data user dans la session
                     req.session.user = {
                         id: user.id,
@@ -290,16 +355,17 @@ router
             });
         })
     })
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-// Nodemailer route
+/*
+ * Router Nodemailer
+ * ***************** */
 router.post('/contact', (req, res) => {
     console.log('form contact', req.body)
     const {
         email,
         message
     } = req.body
-
     let mailOptions = {
         from: 'eddyleguen2@outlook.fr',
         to: 'eddyleguen2@outlook.fr',
@@ -324,7 +390,6 @@ router.post('/contact', (req, res) => {
     })
 })
 
-
 // Partie deconnection
 router.post('/logout', (req, res) => {
     req.session.destroy(() => {
@@ -334,5 +399,9 @@ router.post('/logout', (req, res) => {
     })
 })
 
+
+router.get('/*', function (req, res) {
+    res.render('pageerreur')
+})
 
 module.exports = router

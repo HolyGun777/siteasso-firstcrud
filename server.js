@@ -85,4 +85,4 @@ app.listen(port, function () {
 //     })
 // })
 
-
+module.exports = { db, app }
