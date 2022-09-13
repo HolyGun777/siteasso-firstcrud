@@ -3,9 +3,13 @@ const router = express.Router()
 const db = require('./config/db')
 const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
-
+require('dotenv').config()
 const multer = require("multer");
-const { MulterError } = require('multer')
+const {
+    MulterError
+} = require('multer')
+
+require('dotenv').config()
 
 const transporter = nodemailer.createTransport({
     host: "pop-mail.outlook.com",
@@ -32,8 +36,8 @@ const storage = multer.diskStorage({
         console.log('config multer', file, file.originalname)
         const ext = file.originalname.slice(-3),
 
-        completed = file.originalname        
-        
+            completed = file.originalname
+
         file.completed = completed
 
         // name_timestamp.ext
@@ -55,13 +59,13 @@ const upload = multer({
         if (
             file.mimetype === "image/png" ||
             file.mimetype === "image/jpg" ||
-            file.mimetype === "image/jpeg"||
+            file.mimetype === "image/jpeg" ||
             file.mimetype === "image/gif"
         ) {
             cb(null, true)
         } else {
             cb(null, false)
-            cb(new Error('Le fichier doit être au format png, jpg, jpeg ou gif.'))                                             
+            cb(new Error('Le fichier doit être au format png, jpg, jpeg ou gif.'))
         }
     }
 })
@@ -70,7 +74,9 @@ const upload = multer({
  * ----ROUTER----
  * ************** */
 
-router.route('/ping').get((req, res) => res.json({ message: "Pong !" }))
+router.route('/ping').get((req, res) => res.json({
+    message: "Pong !"
+}))
 
 router.get('/', function (req, res) {
     res.render('home')
@@ -83,15 +89,17 @@ router.route("/article")
     .post(upload.single('image'))
 
 router.post("/admin/:id", upload.single('image'), async (req, res) => {
-    const { image } = req.body;
+    const {
+        image
+    } = req.body;
     const imageID = req.file ? req.file.filename : false;
 
     if (image) await db.query(`INSERT INTO article SET image="${image}", id="${imageID}" , image="${image}"`),
-      console.log("image OK");
+        console.log("image OK");
     else await db.query(`INSERT INTO article SET image="${image}", id="${imageID}" , image=''`);
 
     res.redirect("/");
-  })
+})
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -156,18 +164,34 @@ router
 
 router
     .get('/stage/:id', async (req, res) => {
+        // console.log('stage ID', req.params);
         const {
             id
         } = req.params
-        const stage = await db.query(`SELECT * FROM stage WHERE idstage = ${ id }`)
+        const [stage] = await db.query(`SELECT * FROM stage WHERE idstage = ${ id }`)
 
-        if (stage.length <= 0) res.redirect('/')
-
-        else res.render('stageID', {
-            stage: stage[0]
-        })
+        if (!stage) {
+            if (process.env.MODE === 'test') {
+                res.json({
+                    message: "Stage introuvable",
+                })
+            } else {
+                res.redirect('/')
+            }
+        } else {
+            if (process.env.MODE === 'test') {
+                res.json({
+                    message: "Stage trouvé",
+                    stage
+                })
+            } else {
+                res.render('stageID', {
+                    stage
+                })
+            }
+        }
     })
-   
+
     .put('/stage/:id', async (req, res) => {
         console.log('edit::stage', req.params, req.body)
         const {
@@ -180,33 +204,66 @@ router
 
         if (titre) await db.query(`UPDATE stage SET titre = "${ titre }" WHERE idstage = ${ id }`)
         if (text) await db.query(`UPDATE stage SET text = "${ text }" WHERE idstage = ${ id }`)
-
-        res.redirect('/admin')
+        // condition pour renvoyer du Json en MODE test
+        if (process.env.MODE === 'test') {
+            res.json({
+                message: "Put stage :id",
+                dbstage: data
+            })
+        } else {
+            res.redirect('/admin')
+        }
     })
     .delete('/stage/:id', async (req, res) => {
         console.log('delete::stage', req.params, req.body)
+        const data = await db.query('SELECT * FROM stage')
         const {
             id
         } = req.params
+
+        if (process.env.MODE === 'test') {
+            res.json({
+                dbstage: data
+            })
+        } else {
+            res.redirect('/admin')
+        }
         if (id) await db.query(`DELETE FROM stage WHERE idstage = ${id}`)
-        res.redirect('/admin')
+
     })
 
 router
     .get('/stage', async (req, res) => {
         const data = await db.query('SELECT * FROM stage')
-        res.render('stage', {
-            dbstage: data
-        })
+
+        if (process.env.MODE === 'test') {
+            res.json({
+                dbstage: data
+            })
+        } else {
+            res.render('stage', {
+                dbstage: data
+            })
+        }
     })
-    .post('/stage', (req, res) => {
-        console.log('create::stage', req.body)
+
+    .post('/stage', async (req, res) => {
         const {
             titre,
             text
         } = req.body
-        db.query(`INSERT INTO stage (titre, text) VALUES ("${ titre }", "${ text }")`)
-        res.redirect('/admin')
+
+        const data = await db.query(`INSERT INTO stage (titre, text) VALUES ("${ titre }", "${ text }")`)
+        const [newStage] = await db.query(`SELECT * FROM stage WHERE idstage = ${ data.insertId }`)
+
+        if (process.env.MODE === 'test') {
+            res.json({
+                dbStage: data,
+                newStage
+            })
+        } else {
+            res.redirect('/stage')
+        }
     })
 
 router.get('/admin', async (req, res) => {
@@ -214,27 +271,18 @@ router.get('/admin', async (req, res) => {
         layout: 'adminLayout',
         dbstage: await db.query('SELECT * FROM stage'),
         dbArticles: await db.query('SELECT * FROM article')
-
     })
 })
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-router.get('/stage/:id', async function (req, res) {
-    const { id } = res.params
-    const stage = await db.query(`SELECT * FROM stage WHERE idstage = ${ id }`)
-
-    res.render('formulaire',{
-        stage : stage[0]
-     })
-})
 
 router.get('/biographie', function (req, res) {
     res.render('biographie')
 })
 
 router.get('/formulaire', async function (req, res) {
-    res.render('formulaire',{
-       dbstage : await db.query('SELECT * FROM stage')
+    res.render('formulaire', {
+        dbstage: await db.query('SELECT * FROM stage')
     })
 })
 
@@ -253,32 +301,30 @@ router
         } = req.body;
         console.log('inscription', req.body)
 
-        db.query(`INSERT INTO user (nom,prenom,mail,numero,pseudo,motdepasse) VALUES 
-    ("${ nom }","${ prenom }","${ mail }","${ numero }","${ pseudo }","${ await bcrypt.hash(motdepasse, 10) }")`)
-        res.redirect('/')
+        if (!nom || !prenom || !mail || !numero || !pseudo || !motdepasse) {
+            if (process.env.MODE === "test") {
+                return res.json({
+                    message: "Il manque une information dans votre formulaire"
+                })
+            } else {
+                return res.redirect('/')
+            }
+        }
+
+        const data = await db.query(`INSERT INTO user (nom,prenom,mail,numero,pseudo,motdepasse) VALUES 
+        ("${ nom }","${ prenom }","${ mail }","${ numero }","${ pseudo }","${ await bcrypt.hash(motdepasse, 10) }")`)
+
+        const [newUser] = await db.query(`SELECT * FROM user WHERE id = ${ data.insertId }`)
+        if (process.env.MODE === "test") {
+            res.json({
+                message: "Il manque une information dans votre formulaire",
+                newUser
+            })
+        } else {
+            res.redirect('/')
+        }
+
     })
-    
-// router.get('/admin1', function (req, res) {
-//     res.render('admin1', {
-//         layout: 'adminLayout'
-//     })
-// })
-
-// router.get('/admin', function (req, res) {
-//     db.query('SELECT * FROM article', (err, data) => {
-//         res.render('admin', {
-//             layout: 'adminLayout'
-//         })
-//     })
-// })
-
-// router.get('/admin', function (req, res) {
-//     db.query('SELECT * FROM article', (err, data) => {
-//         res.render('admin', {
-//             dbArticles: data
-//         })
-//     })
-// })
 
 router.get('/pageerreur', function (req, res) {
     res.render('pageerreur')
@@ -300,7 +346,7 @@ router
         })
     })
     .put('/:id', async (req, res) => {
-        console.log('edit::user', req.params, req.body)
+        // console.log('edit::user', req.params, req.body)
         const {
             id
         } = req.params;
@@ -327,19 +373,30 @@ router
 router
     .post('/login', (req, res) => {
         const {
-            mail,
+            email,
             password
         } = req.body
 
-        console.log("login", req.body)
+        db.query(`SELECT * FROM user WHERE mail = "${email}"`, function (err, data) {
+            if (err) console.log(err);
 
-        db.query(`SELECT * FROM user WHERE mail ="${mail}"`, function (err, data) {
-            if (err) throw err;
-            console.log(data);
             if (!data[0]) return res.redirect('/')
 
             bcrypt.compare(password, data[0].motdepasse, function (err, result) {
-                if (result === true) {
+                if (err) console.log(err)
+                if (!result) {
+
+                    if (process.env.MODE === "test") {
+                        res.json({
+                            message: 'Une erreur est survenu !'
+                        })
+                    } else {
+                        return res.render('home', {
+                            flash: "L\'email ou le mot de passe n\'est pas correct !"
+                        })
+                    }
+                }
+                if (result) {
                     let user = data[0];
                     // Assignation des data user dans la session
                     req.session.user = {
@@ -347,11 +404,15 @@ router
                         email: user.mail,
                         pseudo: user.pseudo
                     };
-                    console.log('ok login');
-                    res.redirect('/')
-                } else return res.render('home', {
-                    flash: "L\'email ou le mot de passe n\'est pas correct !"
-                })
+
+                    if (process.env.MODE === "test") {
+                        res.json({
+                            message: 'vous êtes connecté'
+                        })
+                    } else {
+                        res.redirect('/')
+                    }
+                }
             });
         })
     })
