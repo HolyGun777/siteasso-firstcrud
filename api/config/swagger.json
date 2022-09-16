@@ -1,0 +1,201 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Ma description ici [http://url](http://url)",
+    "version": "1.0.0",
+    "title": "BrunoApp",
+    "termsOfService": "http://url_to_tos/",
+    "contact": {
+      "email": "email@mail.r"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Articles",
+      "description": "Ma super description"
+    }
+  ],
+
+
+  "paths": {
+    "/stage": {
+      "post": {
+        "tags": [
+          "Stage"
+        ],
+        "summary": "/stage",
+        "description": "",
+        "consumes": ["application/x-www-form-urlencoded"],
+        "parameters": [
+          {
+            "name": "titre",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "text",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      },
+      "get": {
+        "summary": "/stage",
+        "consumes": ["application/x-www-form-urlencoded"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "flash": {
+                  "type": "string",
+                  "example": "get stage"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "sucess get"
+                },
+                "stage": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "idstage": {
+                        "type": "number"
+                      },
+                      "titre": {
+                        "type": "string",
+                        "in": "formData"
+                      },
+                      "text": {
+                        "type": "string",
+                        "in": "formData"
+                      }
+                    },
+                    "required": [
+                      "idstage",
+                      "titre",
+                      "text"           
+                    ]
+                  },
+                  "example": [
+                    {
+                      "id": 3,
+                      "titre": "string",
+                      "text": 9
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Stage"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/stage/{id}":{
+      "put": {
+        "summary": "/stage/{id}",
+        "consumes": ["application/x-www-form-urlencoded"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "titre",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "text",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        },
+        "tags": [
+          "Stage"
+        ]
+      },
+      "delete": {
+        "summary": "/stage/{id}",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        },
+        "tags": [
+          "Stage"
+        ]
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login user",
+        "description": "",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "autre doc / lien",
+    "url": "http://ton_lien"
+  }
+}

@@ -93,7 +93,7 @@ describe("CHAI // CONTROLLER // STAGE", () => {
 
     
         // // Test Route POST stages
-        it("ChaiRouter // POST // Stages", (done) => {
+        it("ChaiRouter // POST // Stage", (done) => {
             chai
                 .request(app)
                 .post("/stage")

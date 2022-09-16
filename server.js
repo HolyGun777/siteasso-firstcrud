@@ -10,6 +10,13 @@ const methodOverride = require('method-override');
 const expressSession = require("express-session");
 const MySQLStore = require("express-mysql-session")(expressSession);
 
+// config swagger
+// const expressOasGenerator = require('express-oas-generator');
+// expressOasGenerator.init(app, {})
+
+const swaggerUi = require('swagger-ui-express'),
+  swaggerDocument = require('./api/config/swagger.json');
+/////////////////////////////////////////////////////////////////
 
 const {
   limitArray,
@@ -70,12 +77,16 @@ app.use(
     store: sessionStore
   })
 );
+
 // Session Connexion for HBS
 app.use('*', (req, res, next) => {
   // console.log("log::session", req.session);
   res.locals.user = req.session.user;
   next();
 })
+
+// Route pour API Swagger
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Router
 const ROUTER = require("./api/router")
@@ -88,21 +99,6 @@ app.listen(port, function () {
   console.log(`Ecoute le port ${port}, lancé le : ${new Date().toLocaleString()}`);
 });
 
-
-// hashage du mot de passe
-// const bcrypt = require('bcrypt')
-
-// const str = "1234567"
-// bcrypt.hash(str, 10, (err, hash) => {
-
-//     console.log('hash', hash)
-
-//     bcrypt.compare('1234567', hash, (err, result) => {
-
-//         console.log('result', result)
-
-//     })
-// })
 
 module.exports = {
   db,

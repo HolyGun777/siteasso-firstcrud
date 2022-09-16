@@ -204,6 +204,8 @@ router
 
         if (titre) await db.query(`UPDATE stage SET titre = "${ titre }" WHERE idstage = ${ id }`)
         if (text) await db.query(`UPDATE stage SET text = "${ text }" WHERE idstage = ${ id }`)
+        const data = await db.query(`SELECT * FROM stage WHERE idstage = ${ id }`)
+
         // condition pour renvoyer du Json en MODE test
         if (process.env.MODE === 'test') {
             res.json({
@@ -215,35 +217,40 @@ router
         }
     })
     .delete('/stage/:id', async (req, res) => {
-        console.log('delete::stage', req.params, req.body)
-        const data = await db.query('SELECT * FROM stage')
+        // console.log('delete::stage', req.params, req.body)
         const {
             id
         } = req.params
+        if (id) await db.query(`DELETE FROM stage WHERE idstage = ${id}`)
 
+        const data = await db.query('SELECT * FROM stage')
+        
         if (process.env.MODE === 'test') {
             res.json({
+                message: "delete ok",
                 dbstage: data
             })
         } else {
             res.redirect('/admin')
         }
-        if (id) await db.query(`DELETE FROM stage WHERE idstage = ${id}`)
 
     })
 
 router
     .get('/stage', async (req, res) => {
         const data = await db.query('SELECT * FROM stage')
+        console.log('test1');
 
         if (process.env.MODE === 'test') {
             res.json({
-                dbstage: data
+                dbstage: data,
+                            
             })
         } else {
             res.render('stage', {
                 dbstage: data
             })
+            console.log('test2');
         }
     })
 
@@ -335,17 +342,17 @@ router.get('/pageerreur', function (req, res) {
  * Router inscription
  * ****************** */
 router
-    .get('/:id', async (req, res) => {
-        const {
-            id
-        } = req.params
-        const user = await db.query(`SELECT * FROM user WHERE id = ${ id }`)
-        if (user.length <= 0) res.redirect('/')
-        else res.render('/', {
-            user: user[0]
-        })
-    })
-    .put('/:id', async (req, res) => {
+    // .get('/user/:id', async (req, res) => {
+    //     const {
+    //         id
+    //     } = req.params
+    //     const user = await db.query(`SELECT * FROM user WHERE id = ${ id }`)
+    //     if (user.length <= 0) res.redirect('/')
+    //     else res.render('/', {
+    //         user: user[0]
+    //     })
+    // })
+    .put('/user/:id', async (req, res) => {
         // console.log('edit::user', req.params, req.body)
         const {
             id
@@ -461,8 +468,8 @@ router.post('/logout', (req, res) => {
 })
 
 
-router.get('/*', function (req, res) {
-    res.render('pageerreur')
-})
+// router.get('/*', function (req, res) {
+//     res.render('pageerreur')
+// })
 
 module.exports = router
