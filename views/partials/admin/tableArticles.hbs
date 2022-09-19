@@ -8,8 +8,7 @@
     </button>
 
     <!-- Modal Create Article -->
-    <div class="modal fade" id="modalCreateArticles" tabindex="-1" aria-labelledby="modalArticlesLabel"
-      aria-hidden="true">
+    <div class="modal fade" id="modalCreateArticles" tabindex="-1" aria-labelledby="modalArticlesLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -17,7 +16,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form action="/article" method="post">
+            <form action="/article" method="post" enctype="multipart/form-data">
               <div>
                 <label for="titre">Titre</label>
                 <input type="text" name="titre" id="titre">
@@ -29,6 +28,7 @@
                   <label for="floatingTextarea">text</label>
                 </div>
               </div>
+               <input type="file" name="image" />
               <button class="btn btn-success" type="submit">Create</button>
             </form>
           </div>

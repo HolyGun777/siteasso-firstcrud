@@ -5,9 +5,6 @@ const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 require('dotenv').config()
 const multer = require("multer");
-const {
-    MulterError
-} = require('multer')
 
 require('dotenv').config()
 
@@ -29,17 +26,25 @@ const transporter = nodemailer.createTransport({
 const storage = multer.diskStorage({
     // Ici la destination (ou seront stocker nos fichiers par default)
     destination: (req, file, cb) => {
-        cb(null, './public/upload')
+        cb(null, './public/images')
     },
     // Ici est définit le format du nom de l'image à stocker
     filename: (req, file, cb) => {
-        console.log('config multer', file, file.originalname)
-        const ext = file.originalname.slice(-3),
 
-            completed = file.originalname
+        // default.png -> default
+        //  https://www.w3schools.com/jsref/jsref_split.asp
+        // https://www.w3schools.com/jsref/jsref_replace.asp
+        const ext = file.originalname.split('.')[file.originalname.split('.').length - 1],
+            completed = file.originalname.toString()
+            .replace('.png', '-')
+            .replace('.jpg', '-')
+            .replace('.jpeg', '-')
+            .replace('.gif', '-') +
+            Date.now() + '.' + ext;
 
         file.completed = completed
 
+        console.log('MULTER', file, ext)
         // name_timestamp.ext
 
         cb(null, completed)
@@ -85,21 +90,21 @@ router.get('/', function (req, res) {
 /*
  * Router Multer
  * ************* */
-router.route("/article")
-    .post(upload.single('image'))
+// router.route("/article")
+//     .post(upload.single('image'))
 
-router.post("/admin/:id", upload.single('image'), async (req, res) => {
-    const {
-        image
-    } = req.body;
-    const imageID = req.file ? req.file.filename : false;
+// router.post("/admin/:id", async (req, res) => {
+//     const {
+//         image
+//     } = req.body;
+//     const imageID = req.file ? req.file.filename : false;
 
-    if (image) await db.query(`INSERT INTO article SET image="${image}", id="${imageID}" , image="${image}"`),
-        console.log("image OK");
-    else await db.query(`INSERT INTO article SET image="${image}", id="${imageID}" , image=''`);
+//     if (image) await db.query(`INSERT INTO article SET image="${image}", id="${imageID}" , image="${image}"`),
+//         console.log("image OK");
+//     else await db.query(`INSERT INTO article SET image="${image}", id="${imageID}" , image=''`);
 
-    res.redirect("/");
-})
+//     res.redirect("/");
+// })
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -118,7 +123,7 @@ router
     })
 
     .put('/article/:id', async (req, res) => {
-        console.log('edit::article', req.params, req.body)
+        console.log('edit::article', req.params, req.body, req.file)
         const {
             id
         } = req.params;
@@ -126,10 +131,14 @@ router
             titre,
             text
         } = req.body;
+        const {
+            image
+        } = req.file;
 
         if (titre) await db.query(`UPDATE article SET titre = "${ titre }" WHERE idarticle = ${ id }`)
         if (text) await db.query(`UPDATE article SET text = "${ text }" WHERE idarticle = ${ id }`)
-
+        if (image) await db.query(`UPDATE article SET image = "${ image }" WHERE idarticle = ${ id }`)
+        
         res.redirect('/admin')
     })
     .delete('/article/:id', async (req, res) => {
@@ -147,13 +156,22 @@ router
             dbArticles: data
         })
     })
-    .post('/article', (req, res) => {
-        console.log('create::article', req.body)
+    .post('/article', upload.single('image'), async (req, res) => {
+        console.log('create::article', req.body, req.file)
         const {
             titre,
             text
         } = req.body
-        db.query(`INSERT INTO article (titre, text) VALUES ("${ titre }", "${ text }")`)
+        const {
+            completed
+        } = req.file;
+        const newImage = await db.query(`INSERT INTO image (name, path) VALUES ("${ completed }", "/assets/images/${ completed }")`)
+        console.log('newImage', newImage)
+
+        if (!titre || !text || !newImage) res.json({
+            message: 'Il y a un champs manquant !'
+        })
+        db.query(`INSERT INTO article (titre, text, image_id) VALUES ("${ titre }", "${ text }", "${ newImage.insertId }")`)
         res.redirect('/admin')
     })
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -191,7 +209,6 @@ router
             }
         }
     })
-
     .put('/stage/:id', async (req, res) => {
         console.log('edit::stage', req.params, req.body)
         const {
@@ -201,6 +218,10 @@ router
             titre,
             text
         } = req.body;
+
+        if (!id || !titre || !text) res.render("Erreur", {
+            flash: "Veuillez remplir les champs demandés",
+        });
 
         if (titre) await db.query(`UPDATE stage SET titre = "${ titre }" WHERE idstage = ${ id }`)
         if (text) await db.query(`UPDATE stage SET text = "${ text }" WHERE idstage = ${ id }`)
@@ -216,6 +237,7 @@ router
             res.redirect('/admin')
         }
     })
+
     .delete('/stage/:id', async (req, res) => {
         // console.log('delete::stage', req.params, req.body)
         const {
@@ -224,7 +246,7 @@ router
         if (id) await db.query(`DELETE FROM stage WHERE idstage = ${id}`)
 
         const data = await db.query('SELECT * FROM stage')
-        
+
         if (process.env.MODE === 'test') {
             res.json({
                 message: "delete ok",
@@ -239,14 +261,14 @@ router
 router
     .get('/stage', async (req, res) => {
         const data = await db.query('SELECT * FROM stage')
-        console.log('test1');
-
+        console.log("test1");
         if (process.env.MODE === 'test') {
+            console.log("test2");
             res.json({
                 dbstage: data,
-                            
             })
         } else {
+            console.log("test3");
             res.render('stage', {
                 dbstage: data
             })
@@ -273,13 +295,14 @@ router
         }
     })
 
-router.get('/admin', async (req, res) => {
-    res.render('admin', {
-        layout: 'adminLayout',
-        dbstage: await db.query('SELECT * FROM stage'),
-        dbArticles: await db.query('SELECT * FROM article')
+router
+    .get('/admin', async (req, res) => {
+        res.render('admin', {
+            layout: 'adminLayout',
+            dbstage: await db.query('SELECT * FROM stage'),
+            dbArticles: await db.query('SELECT * FROM article')
+        })
     })
-})
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -308,6 +331,11 @@ router
         } = req.body;
         console.log('inscription', req.body)
 
+        const [mailExistOnDB] = await db.query(`SELECT mail FROM user WHERE mail = "${ mail }"`)
+        if (mailExistOnDB) return res.json({
+            message: "Ce mail est deja utiliser"
+        })
+
         if (!nom || !prenom || !mail || !numero || !pseudo || !motdepasse) {
             if (process.env.MODE === "test") {
                 return res.json({
@@ -332,11 +360,9 @@ router
         }
 
     })
-
 router.get('/pageerreur', function (req, res) {
     res.render('pageerreur')
 })
-
 
 /*
  * Router inscription
@@ -379,12 +405,13 @@ router
  * ****************** */
 router
     .post('/login', (req, res) => {
+        console.log('Login', req.body)
         const {
-            email,
+            mail,
             password
         } = req.body
 
-        db.query(`SELECT * FROM user WHERE mail = "${email}"`, function (err, data) {
+        db.query(`SELECT * FROM user WHERE mail = "${mail}"`, function (err, data) {
             if (err) console.log(err);
 
             if (!data[0]) return res.redirect('/')
