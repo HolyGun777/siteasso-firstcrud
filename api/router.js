@@ -87,25 +87,6 @@ router.get('/', function (req, res) {
     res.render('home')
 })
 
-/*
- * Router Multer
- * ************* */
-// router.route("/article")
-//     .post(upload.single('image'))
-
-// router.post("/admin/:id", async (req, res) => {
-//     const {
-//         image
-//     } = req.body;
-//     const imageID = req.file ? req.file.filename : false;
-
-//     if (image) await db.query(`INSERT INTO article SET image="${image}", id="${imageID}" , image="${image}"`),
-//         console.log("image OK");
-//     else await db.query(`INSERT INTO article SET image="${image}", id="${imageID}" , image=''`);
-
-//     res.redirect("/");
-// })
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
  * Router article
@@ -115,15 +96,17 @@ router
         const {
             id
         } = req.params
-        const article = await db.query(`SELECT * FROM article WHERE idarticle = ${ id }`)
+        // const article = await db.query(`SELECT * FROM article WHERE idarticle = ${ id }`)
+        const [article] = await db.query(`SELECT art.titre,art.text,img.path FROM article AS art INNER JOIN image AS img ON art.image_id = img.id WHERE idarticle = ${ id }`);
+        console.log('article:', article);
         if (article.length <= 0) res.redirect('/')
         else res.render('articleID', {
-            article: article[0]
+            article
         })
     })
 
     .put('/article/:id', async (req, res) => {
-        console.log('edit::article', req.params, req.body, req.file)
+        // console.log('edit::article', req.params, req.body, req.file)
         const {
             id
         } = req.params;
@@ -138,7 +121,7 @@ router
         if (titre) await db.query(`UPDATE article SET titre = "${ titre }" WHERE idarticle = ${ id }`)
         if (text) await db.query(`UPDATE article SET text = "${ text }" WHERE idarticle = ${ id }`)
         if (image) await db.query(`UPDATE article SET image = "${ image }" WHERE idarticle = ${ id }`)
-        
+
         res.redirect('/admin')
     })
     .delete('/article/:id', async (req, res) => {
@@ -146,12 +129,14 @@ router
             id
         } = req.params
         if (id) await db.query(`DELETE FROM article WHERE idarticle = ${id}`)
+       
         res.redirect('/admin')
     })
 
 router
     .get('/article', async (req, res) => {
-        const data = await db.query('SELECT * FROM article')
+        // const data = await db.query('SELECT * FROM article')
+        const data = await db.query(`SELECT art.idarticle,art.titre,art.text,img.path FROM article AS art INNER JOIN image AS img ON art.image_id = img.id`);
         res.render('article', {
             dbArticles: data
         })
@@ -173,6 +158,7 @@ router
         })
         db.query(`INSERT INTO article (titre, text, image_id) VALUES ("${ titre }", "${ text }", "${ newImage.insertId }")`)
         res.redirect('/admin')
+
     })
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -239,7 +225,6 @@ router
     })
 
     .delete('/stage/:id', async (req, res) => {
-        // console.log('delete::stage', req.params, req.body)
         const {
             id
         } = req.params
@@ -345,7 +330,6 @@ router
                 return res.redirect('/')
             }
         }
-
         const data = await db.query(`INSERT INTO user (nom,prenom,mail,numero,pseudo,motdepasse) VALUES 
         ("${ nom }","${ prenom }","${ mail }","${ numero }","${ pseudo }","${ await bcrypt.hash(motdepasse, 10) }")`)
 
@@ -358,7 +342,6 @@ router
         } else {
             res.redirect('/')
         }
-
     })
 router.get('/pageerreur', function (req, res) {
     res.render('pageerreur')
@@ -368,16 +351,6 @@ router.get('/pageerreur', function (req, res) {
  * Router inscription
  * ****************** */
 router
-    // .get('/user/:id', async (req, res) => {
-    //     const {
-    //         id
-    //     } = req.params
-    //     const user = await db.query(`SELECT * FROM user WHERE id = ${ id }`)
-    //     if (user.length <= 0) res.redirect('/')
-    //     else res.render('/', {
-    //         user: user[0]
-    //     })
-    // })
     .put('/user/:id', async (req, res) => {
         // console.log('edit::user', req.params, req.body)
         const {
@@ -493,7 +466,6 @@ router.post('/logout', (req, res) => {
         res.redirect('/');
     })
 })
-
 
 // router.get('/*', function (req, res) {
 //     res.render('pageerreur')

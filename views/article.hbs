@@ -1,17 +1,15 @@
-
 {{!-- boucle permettant d afficher des article de la db dans une page --}}
-  <div class="container">
-    <div class="d-flex justify-content-between m-2">
-      {{#each dbArticles }}
-      <div class="card" style="width: 18rem;">
-        <img src="..." class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">{{ inc @index }} {{ upper this.titre }}</h5>
-          <p class="card-text"> {{ truncStr this.text 20}}</p>
-          <a href="/article/{{ this.idarticle }}" class="btn btn-primary">Voir +</a>
-        </div>
+<div class="container">
+  <div class="d-flex justify-content-between m-2">
+    {{#each dbArticles }}
+    <div class="card" style="width: 18rem;">
+      <img src="{{ this.path }}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">{{ inc @index }} {{ upper this.titre }}</h5>
+        <p class="card-text"> {{ truncStr this.text 20}}</p>
+        <a href="/article/{{ this.idarticle }}" class="btn btn-primary">Voir +</a>
       </div>
-      {{/each }}
     </div>
+    {{/each }}
   </div>
-  <img src="/assets/pics/img.jpg" class="d-block w-100" alt="">
+</div>
