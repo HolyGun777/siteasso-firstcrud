@@ -1,24 +1,26 @@
 {{!-- navbar --}}
 <nav class="navbar bg-secondary">
     <div class="container">
-        <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
-            aria-controls="offcanvasExample">
-            Menu
-        </a>
-    </div>
-    <ul>
-        {{#if user}}
-        <li>
+        <div class="d-flex justify-content-around">
+            <div>
+                <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
+                    aria-controls="offcanvasExample">
+                    Menu
+                </a>
+            </div>
+            <div>
+            {{#if user}}
             <form action="/logout" method="post">
-                <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Déconnexion</button>
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Déconnexion</button>
             </form>
-        </li>
-        {{else}}
-        <li><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            {{else}}
+            <button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#exampleModal">
                 connexion/inscription
-            </button></li>
-        {{/if}}
-    </ul>
+            </button>
+            {{/if}}
+            </div>
+        </div>
+    </div>
 
     {{!-- offcanva --}}
 

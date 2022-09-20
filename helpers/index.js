@@ -16,7 +16,6 @@ exports.inc = (value, option) => {
 }
 
 exports.truncStr = (str, limit) => {
-  console.log('truncStr', str.length, limit)
   if (str.length > limit) {
     return str.slice(0, limit)
   } else {
