@@ -80,7 +80,7 @@ app.use(
 
 // Session Connexion for HBS
 app.use('*', (req, res, next) => {
-  // console.log("log::session", req.session);
+  console.log("log::session", req.session);
   res.locals.user = req.session.user;
   next();
 })
@@ -98,7 +98,6 @@ const port = process.env.PORT || 3000;
 app.listen(port, function () {
   console.log(`Ecoute le port ${port}, lancé le : ${new Date().toLocaleString()}`);
 });
-
 
 module.exports = {
   db,

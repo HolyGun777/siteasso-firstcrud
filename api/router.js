@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 require('dotenv').config()
 const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 require('dotenv').config()
 
@@ -30,7 +32,6 @@ const storage = multer.diskStorage({
     },
     // Ici est définit le format du nom de l'image à stocker
     filename: (req, file, cb) => {
-
         // default.png -> default
         //  https://www.w3schools.com/jsref/jsref_split.asp
         // https://www.w3schools.com/jsref/jsref_replace.asp
@@ -128,8 +129,18 @@ router
         const {
             id
         } = req.params
+
+        const [article] = await db.query(`SELECT image_id from article WHERE idarticle=${id}`)
+        const [img] = await db.query(`SELECT * from image WHERE id=${article.image_id}`)
+        console.log('image and article', img, article);
+        if (img.name !== "default.png") {
+            pathImg = path.resolve("public/images/" + img.name)
+            fs.unlink(pathImg, (err) => {
+                if (err) throw err;
+            })
+        }
+
         if (id) await db.query(`DELETE FROM article WHERE idarticle = ${id}`)
-       
         res.redirect('/admin')
     })
 
@@ -158,7 +169,6 @@ router
         })
         db.query(`INSERT INTO article (titre, text, image_id) VALUES ("${ titre }", "${ text }", "${ newImage.insertId }")`)
         res.redirect('/admin')
-
     })
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -229,9 +239,7 @@ router
             id
         } = req.params
         if (id) await db.query(`DELETE FROM stage WHERE idstage = ${id}`)
-
         const data = await db.query('SELECT * FROM stage')
-
         if (process.env.MODE === 'test') {
             res.json({
                 message: "delete ok",
@@ -240,7 +248,6 @@ router
         } else {
             res.redirect('/admin')
         }
-
     })
 
 router
@@ -248,16 +255,13 @@ router
         const data = await db.query('SELECT * FROM stage')
         console.log("test1");
         if (process.env.MODE === 'test') {
-            console.log("test2");
             res.json({
                 dbstage: data,
             })
         } else {
-            console.log("test3");
-            res.render('stage', {
+            res.render('admin', {
                 dbstage: data
             })
-            console.log('test2');
         }
     })
 
@@ -289,7 +293,6 @@ router
         })
     })
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 router.get('/biographie', function (req, res) {
     res.render('biographie')
@@ -409,6 +412,7 @@ router
                     req.session.user = {
                         id: user.id,
                         email: user.mail,
+                        isAdmin: user.isAdmin,
                         pseudo: user.pseudo
                     };
 
@@ -467,8 +471,8 @@ router.post('/logout', (req, res) => {
     })
 })
 
-// router.get('/*', function (req, res) {
-//     res.render('pageerreur')
-// })
+router.get('/*', function (req, res) {
+    res.render('pageerreur')
+})
 
 module.exports = router
