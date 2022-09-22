@@ -107,7 +107,6 @@ router
     })
 
     .put('/article/:id', async (req, res) => {
-        // console.log('edit::article', req.params, req.body, req.file)
         const {
             id
         } = req.params;
@@ -317,7 +316,7 @@ router
             pseudo,
             motdepasse
         } = req.body;
-        console.log('inscription', req.body)
+        // console.log('inscription', req.body)
 
         const [mailExistOnDB] = await db.query(`SELECT mail FROM user WHERE mail = "${ mail }"`)
         if (mailExistOnDB) return res.json({
@@ -381,7 +380,7 @@ router
  * ****************** */
 router
     .post('/login', (req, res) => {
-        console.log('Login', req.body)
+        // console.log('Login', req.body)
         const {
             mail,
             password
@@ -433,7 +432,7 @@ router
  * Router Nodemailer
  * ***************** */
 router.post('/contact', (req, res) => {
-    console.log('form contact', req.body)
+    // console.log('form contact', req.body)
     const {
         email,
         message
@@ -466,7 +465,7 @@ router.post('/contact', (req, res) => {
 router.post('/logout', (req, res) => {
     req.session.destroy(() => {
         res.clearCookie('poti-gato');
-        console.log("Clear Cookie session :", req.sessionID);
+        // console.log("Clear Cookie session :", req.sessionID);
         res.redirect('/');
     })
 })

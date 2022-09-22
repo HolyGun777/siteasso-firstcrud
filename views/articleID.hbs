@@ -1,16 +1,16 @@
-{{!-- <h2>Article {{ index }}</h2> --}}
-<div class="m-3">
-  <a href="/article" class="btn btn-primary">Article</a>
-</div>
-
 <div class="container">
-  <div class="d-flex justify-content-center mt-2">
-    {{ upper article.titre }}
-  </div>
-  <div>
-    {{ article.text }}
-  </div>
-  <div>
-    <img src="{{ article.path }}" class="card-img-top" alt="...">
+  <div class="col">
+    <div class="m-3">
+      <a href="/article" class="btn btn-primary">Article</a>
+    </div>
+    <div class="d-flex justify-content-center mt-2">
+      {{ upper article.titre }}
+    </div>
+    <div>
+      {{ article.text }}
+    </div>
+    <div>
+      <img src="{{ article.path }}" class="card-img-top" alt="...">
+    </div>
   </div>
 </div>

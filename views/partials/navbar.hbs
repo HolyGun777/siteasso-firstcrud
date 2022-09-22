@@ -1,23 +1,23 @@
 {{!-- navbar --}}
 <nav class="navbar bg-secondary">
     <div class="container">
-        <div class="d-flex justify-content-around">
-            <div>
-                <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
-                    aria-controls="offcanvasExample">
-                    Menu
-                </a>
-            </div>
+        <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
+            aria-controls="offcanvasExample">
+           Menu
+        </a>
+        <ul>
             {{#if user}}
-            <form action="/logout" method="post">
-                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Déconnexion</button>
-            </form>
+            <li>
+                <form action="/logout" method="post">
+                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Déconnexion</button>
+                </form>
+            </li>
             {{else}}
-            <button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#exampleModal">
-                connexion/inscription
-            </button>
+            <li><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    connexion/inscription
+                </button></li>
             {{/if}}
-        </div>
+        </ul>
     </div>
 
     {{!-- offcanva --}}
@@ -30,10 +30,10 @@
         </div>
         <div class="offcanvas-body">
             <div class="container">
-                <div class="d-grid gap-3">
-                    <a href="/article" class="btn btn-primary">Article</a>
-                    <a href="/formulaire" class="btn btn-primary">Stages et événements</a>
-                    <a href="/biographie" class="btn btn-primary">Biographie</a>
+                <div class="d-grid gap-2">
+                    <a href="/article" class="btn btn-primary bt-sm">Article</a>
+                    <a href="/formulaire" class="btn btn-primary bt-sm">Stages et événements</a>
+                    <a href="/biographie" class="btn btn-primary bt-sm">Biographie</a>
                 </div>
             </div>
         </div>
