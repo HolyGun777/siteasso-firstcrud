@@ -80,7 +80,6 @@ app.use(
 
 // Session Connexion for HBS
 app.use('*', (req, res, next) => {
-  console.log("log::session", req.session);
   res.locals.user = req.session.user;
   next();
 })

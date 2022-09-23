@@ -62,12 +62,5 @@ describe('Test data', function () {
       newArticle = data[0]
       assert.strictEqual(typeof data[0], typeof {});
     });
-
-    // it('Delete All', async function () {
-    //     await db.query(`DELETE from article`)
-    //     let all = await db.query('SELECT * from article')
-    //     // console.log('all', all)
-    //     assert(all.length < 1);
-    // })
   });
 });

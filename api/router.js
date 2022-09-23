@@ -10,6 +10,11 @@ const fs = require("fs");
 
 require('dotenv').config()
 
+const {
+    isAdmin
+} = require('./midllewares/index')
+
+
 const transporter = nodemailer.createTransport({
     host: "pop-mail.outlook.com",
     service: 'outlook',
@@ -45,7 +50,6 @@ const storage = multer.diskStorage({
 
         file.completed = completed
 
-        console.log('MULTER', file, ext)
         // name_timestamp.ext
 
         cb(null, completed)
@@ -131,7 +135,6 @@ router
 
         const [article] = await db.query(`SELECT image_id from article WHERE idarticle=${id}`)
         const [img] = await db.query(`SELECT * from image WHERE id=${article.image_id}`)
-        console.log('image and article', img, article);
         if (img.name !== "default.png") {
             pathImg = path.resolve("public/images/" + img.name)
             fs.unlink(pathImg, (err) => {
@@ -145,14 +148,12 @@ router
 
 router
     .get('/article', async (req, res) => {
-        // const data = await db.query('SELECT * FROM article')
         const data = await db.query(`SELECT art.idarticle,art.titre,art.text,img.path FROM article AS art INNER JOIN image AS img ON art.image_id = img.id`);
         res.render('article', {
             dbArticles: data
         })
     })
     .post('/article', upload.single('image'), async (req, res) => {
-        console.log('create::article', req.body, req.file)
         const {
             titre,
             text
@@ -161,7 +162,6 @@ router
             completed
         } = req.file;
         const newImage = await db.query(`INSERT INTO image (name, path) VALUES ("${ completed }", "/assets/images/${ completed }")`)
-        console.log('newImage', newImage)
 
         if (!titre || !text || !newImage) res.json({
             message: 'Il y a un champs manquant !'
@@ -177,7 +177,6 @@ router
 
 router
     .get('/stage/:id', async (req, res) => {
-        // console.log('stage ID', req.params);
         const {
             id
         } = req.params
@@ -284,7 +283,8 @@ router
     })
 
 router
-    .get('/admin', async (req, res) => {
+    // .use(isAdmin)  appelle du MW isadmin 
+    .get('/admin', isAdmin,  async (req, res) => {
         res.render('admin', {
             layout: 'adminLayout',
             dbstage: await db.query('SELECT * FROM stage'),
@@ -345,6 +345,7 @@ router
             res.redirect('/')
         }
     })
+
 router.get('/pageerreur', function (req, res) {
     res.render('pageerreur')
 })
@@ -354,7 +355,6 @@ router.get('/pageerreur', function (req, res) {
  * ****************** */
 router
     .put('/user/:id', async (req, res) => {
-        // console.log('edit::user', req.params, req.body)
         const {
             id
         } = req.params;
@@ -388,9 +388,7 @@ router
 
         db.query(`SELECT * FROM user WHERE mail = "${mail}"`, function (err, data) {
             if (err) console.log(err);
-
             if (!data[0]) return res.redirect('/')
-
             bcrypt.compare(password, data[0].motdepasse, function (err, result) {
                 if (err) console.log(err)
                 if (!result) {
@@ -427,12 +425,10 @@ router
         })
     })
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
 /*
  * Router Nodemailer
  * ***************** */
 router.post('/contact', (req, res) => {
-    // console.log('form contact', req.body)
     const {
         email,
         message
@@ -446,13 +442,12 @@ router.post('/contact', (req, res) => {
                   ${email}
                   <h2>Sujet:</h2>
                   ${message}
-                `
+               `
     }
     // On demande à notre transporter d'envoyer notre mail
     transporter.sendMail(mailOptions, (err, info) => {
         if (err) console.log(err)
         else {
-            console.log(info)
             res.render('home', {
                 success: "Un email à bien été envoyer à ",
                 flash: ('Votre message a été envoyé !!!')
