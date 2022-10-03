@@ -51,7 +51,6 @@ describe('Test data', function () {
     it('Test Async getStage', async function () {
       console.log('it')
       let res = await db.query('Select * from stage')
-      // console.log(res);
       assert.strictEqual(typeof res, typeof []);
     });
 

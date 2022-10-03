@@ -13,6 +13,7 @@ const config = {
 db = mysql.createConnection(config);
 
 const util = require("util");
+// permet d utiler db dans des fonctions assyncrhone.
 db.query = util.promisify(db.query).bind(db);
 
 // Connect node -> mysql

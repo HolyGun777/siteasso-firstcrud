@@ -28,7 +28,6 @@ const transporter = nodemailer.createTransport({
 /*
  * Config Multer
  * ************** */
-
 // Ici nous définissons la config de stockage de multer
 const storage = multer.diskStorage({
     // Ici la destination (ou seront stocker nos fichiers par default)
@@ -92,60 +91,9 @@ router.get('/', function (req, res) {
     res.render('home')
 })
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
- * Router article
+ * Route article
  * ************** */
-router
-    .get('/article/:id', async (req, res) => {
-        const {
-            id
-        } = req.params
-        // const article = await db.query(`SELECT * FROM article WHERE idarticle = ${ id }`)
-        const [article] = await db.query(`SELECT art.titre,art.text,img.path FROM article AS art INNER JOIN image AS img ON art.image_id = img.id WHERE idarticle = ${ id }`);
-        console.log('article:', article);
-        if (article.length <= 0) res.redirect('/')
-        else res.render('articleID', {
-            article
-        })
-    })
-
-    .put('/article/:id', async (req, res) => {
-        const {
-            id
-        } = req.params;
-        const {
-            titre,
-            text
-        } = req.body;
-        const {
-            image
-        } = req.file;
-
-        if (titre) await db.query(`UPDATE article SET titre = "${ titre }" WHERE idarticle = ${ id }`)
-        if (text) await db.query(`UPDATE article SET text = "${ text }" WHERE idarticle = ${ id }`)
-        if (image) await db.query(`UPDATE article SET image = "${ image }" WHERE idarticle = ${ id }`)
-
-        res.redirect('/admin')
-    })
-    .delete('/article/:id', async (req, res) => {
-        const {
-            id
-        } = req.params
-
-        const [article] = await db.query(`SELECT image_id from article WHERE idarticle=${id}`)
-        const [img] = await db.query(`SELECT * from image WHERE id=${article.image_id}`)
-        if (img.name !== "default.png") {
-            pathImg = path.resolve("public/images/" + img.name)
-            fs.unlink(pathImg, (err) => {
-                if (err) throw err;
-            })
-        }
-
-        if (id) await db.query(`DELETE FROM article WHERE idarticle = ${id}`)
-        res.redirect('/admin')
-    })
-
 router
     .get('/article', async (req, res) => {
         const data = await db.query(`SELECT art.idarticle,art.titre,art.text,img.path FROM article AS art INNER JOIN image AS img ON art.image_id = img.id`);
@@ -169,19 +117,98 @@ router
         db.query(`INSERT INTO article (titre, text, image_id) VALUES ("${ titre }", "${ text }", "${ newImage.insertId }")`)
         res.redirect('/admin')
     })
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*
- * Router stage
- * ************ */
+ * Route article ID
+ * ************** */
+router
+    .get('/article/:id', async (req, res) => {
+        const {
+            id
+        } = req.params
+        // on lie l id de l'image avec celui de l'article
+        const [article] = await db.query(`SELECT art.titre,art.text,img.path FROM article AS art INNER JOIN image AS img ON art.image_id = img.id WHERE idarticle = ${ id }`);
+        if (article.length <= 0) res.redirect('/')
+        else res.render('articleID', {
+            article
+        })
+    })
+    .put('/article/:id', async (req, res) => {
+        const {
+            id
+        } = req.params;
+        const {
+            titre,
+            text
+        } = req.body;
+        const {
+            image
+        } = req.file;
+        if (titre) await db.query(`UPDATE article SET titre = "${ titre }" WHERE idarticle = ${ id }`)
+        if (text) await db.query(`UPDATE article SET text = "${ text }" WHERE idarticle = ${ id }`)
+        if (image) await db.query(`UPDATE article SET image = "${ image }" WHERE idarticle = ${ id }`)
+        res.redirect('/admin')
+    })
+    .delete('/article/:id', async (req, res) => {
+        const {
+            id
+        } = req.params
+        const [article] = await db.query(`SELECT image_id from article WHERE idarticle=${id}`)
+        const [img] = await db.query(`SELECT * from image WHERE id=${article.image_id}`)
+        if (img.name !== "default.png") {
+            pathImg = path.resolve("public/images/" + img.name)
+            fs.unlink(pathImg, (err) => {
+                if (err) throw err;
+            })
+        }
+        if (id) await db.query(`DELETE FROM article WHERE idarticle = ${id}`)
+        res.redirect('/admin')
+    })
+/*
+ * Route stage
+ * ************** */
+router
+    .get('/stage', async (req, res) => {
+        const data = await db.query('SELECT * FROM stage')
+        console.log("test1");
+        if (process.env.MODE === 'test') {
+            res.json({
+                dbstage: data,
+            })
+        } else {
+            res.render('admin', {
+                dbstage: data
+            })
+        }
+    })
+    .post('/stage', async (req, res) => {
+        const {
+            titre,
+            text
+        } = req.body
 
+        const data = await db.query(`INSERT INTO stage (titre, text) VALUES ("${ titre }", "${ text }")`)
+        const [newStage] = await db.query(`SELECT * FROM stage WHERE idstage = ${ data.insertId }`)
+
+        if (process.env.MODE === 'test') {
+            res.json({
+                dbStage: data,
+                newStage
+            })
+        } else {
+            res.redirect('/stage')
+        }
+    })
+
+/*
+ * Route stage id
+ * ************ */
 router
     .get('/stage/:id', async (req, res) => {
         const {
             id
         } = req.params
         const [stage] = await db.query(`SELECT * FROM stage WHERE idstage = ${ id }`)
-
         if (!stage) {
             if (process.env.MODE === 'test') {
                 res.json({
@@ -231,7 +258,6 @@ router
             res.redirect('/admin')
         }
     })
-
     .delete('/stage/:id', async (req, res) => {
         const {
             id
@@ -249,42 +275,8 @@ router
     })
 
 router
-    .get('/stage', async (req, res) => {
-        const data = await db.query('SELECT * FROM stage')
-        console.log("test1");
-        if (process.env.MODE === 'test') {
-            res.json({
-                dbstage: data,
-            })
-        } else {
-            res.render('admin', {
-                dbstage: data
-            })
-        }
-    })
-
-    .post('/stage', async (req, res) => {
-        const {
-            titre,
-            text
-        } = req.body
-
-        const data = await db.query(`INSERT INTO stage (titre, text) VALUES ("${ titre }", "${ text }")`)
-        const [newStage] = await db.query(`SELECT * FROM stage WHERE idstage = ${ data.insertId }`)
-
-        if (process.env.MODE === 'test') {
-            res.json({
-                dbStage: data,
-                newStage
-            })
-        } else {
-            res.redirect('/stage')
-        }
-    })
-
-router
-    // .use(isAdmin)  appelle du MW isadmin 
-    .get('/admin', isAdmin,  async (req, res) => {
+    // .use(isAdmin)  appelle du Middleware isadmin 
+    .get('/admin', isAdmin, async (req, res) => {
         res.render('admin', {
             layout: 'adminLayout',
             dbstage: await db.query('SELECT * FROM stage'),
@@ -316,8 +308,6 @@ router
             pseudo,
             motdepasse
         } = req.body;
-        // console.log('inscription', req.body)
-
         const [mailExistOnDB] = await db.query(`SELECT mail FROM user WHERE mail = "${ mail }"`)
         if (mailExistOnDB) return res.json({
             message: "Ce mail est deja utiliser"
@@ -351,7 +341,7 @@ router.get('/pageerreur', function (req, res) {
 })
 
 /*
- * Router inscription
+ * Route inscription
  * ****************** */
 router
     .put('/user/:id', async (req, res) => {
@@ -380,12 +370,10 @@ router
  * ****************** */
 router
     .post('/login', (req, res) => {
-        // console.log('Login', req.body)
         const {
             mail,
             password
         } = req.body
-
         db.query(`SELECT * FROM user WHERE mail = "${mail}"`, function (err, data) {
             if (err) console.log(err);
             if (!data[0]) return res.redirect('/')
@@ -424,9 +412,9 @@ router
             });
         })
     })
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
 /*
- * Router Nodemailer
+ * Route Nodemailer
  * ***************** */
 router.post('/contact', (req, res) => {
     const {
@@ -456,11 +444,12 @@ router.post('/contact', (req, res) => {
     })
 })
 
-// Partie deconnection
+/*
+ * Route déconnection
+ * ***************** */
 router.post('/logout', (req, res) => {
     req.session.destroy(() => {
         res.clearCookie('poti-gato');
-        // console.log("Clear Cookie session :", req.sessionID);
         res.redirect('/');
     })
 })

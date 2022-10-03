@@ -8,11 +8,12 @@
     </button>
 
     <!-- Modal Create Article -->
-    <div class="modal fade" id="modalCreateArticles" tabindex="-1" aria-labelledby="modalArticlesLabel" aria-hidden="true">
+    <div class="modal fade" id="modalCreateArticles" tabindex="-1" aria-labelledby="modalArticlesLabel"
+      aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="modalArticlesLabel">Modal title</h5>
+            <h5 class="modal-title" id="modalArticlesLabel">Modal Article</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -28,8 +29,8 @@
                   <label for="floatingTextarea">text</label>
                 </div>
               </div>
-               <input type="file" name="image" />
-              <button class="btn btn-success" type="submit">Create</button>
+              <input type="file" name="image" />
+              <button class="btn btn-success" type="submit">Editer</button>
             </form>
           </div>
         </div>
@@ -81,6 +82,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
+
                 <form action="/article/{{ this.idarticle }}?_method=PUT" method="post">
                   <div>
                     <label for="titre">Titre</label>
@@ -89,20 +91,20 @@
                   <div>
                     <label for="text">text</label>
                     <input type="text" name="text" value="{{ this.text }}">
-                    {{!-- insertion de fichier --}}
                     <div class="mb-3">
                       <label for="formFile" class="form-label">Default file input example</label>
                       <input class="form-control" type="file" id="formFile">
                     </div>
-
                     <button class="btn btn-success" type="submit">Editer</button>
                   </div>
+                  
                   <div class="form-floating overflow-scroll">
                     <textarea name="text" class="form-control" placeholder="Leave a comment here"
                       id="floatingTextarea"></textarea>
                     <label for="floatingTextarea">{{this.text}}</label>
                   </div>
                 </form>
+
                 <form action="/article/{{ this.idarticle }}?_method=DELETE" method="post">
                   <button class="btn btn-danger" type="submit">Supprimer</button>
                 </form>
