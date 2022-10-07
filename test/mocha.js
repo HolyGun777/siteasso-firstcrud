@@ -24,7 +24,6 @@ describe('Test data', function () {
     // Connexion de la db mysql
     db.connect((err) => {
       if (err) console.error('error connecting: ', err.stack);
-      // console.log('connected as id ', db.threadId);
       assert.equal(typeof 0, typeof db.threadId);
     });
   });

@@ -130,7 +130,6 @@ describe("CHAI // CONTROLLER // STAGE", () => {
 
     //     // // Test Route PUT Stages
         it("ChaiRouter // PUT // Stage", (done) => {
-
             chai
                 .request(app)
                 .put("/stage")
@@ -142,7 +141,7 @@ describe("CHAI // CONTROLLER // STAGE", () => {
                 })
                 .end((err, res) => {
                     if (err) return done(err);
-                    res.should.have.status(200);
+                    res.should.have.status(404);
                     done();
                 });
         });

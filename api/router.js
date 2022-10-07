@@ -162,6 +162,7 @@ router
             })
         }
         if (id) await db.query(`DELETE FROM article WHERE idarticle = ${id}`)
+        if (id) await db.query(`DELETE FROM image WHERE id = ${article.image_id}`)
         res.redirect('/admin')
     })
 /*
@@ -199,7 +200,6 @@ router
             res.redirect('/stage')
         }
     })
-
 /*
  * Route stage id
  * ************ */
@@ -273,7 +273,6 @@ router
             res.redirect('/admin')
         }
     })
-
 router
     // .use(isAdmin)  appelle du Middleware isadmin 
     .get('/admin', isAdmin, async (req, res) => {
